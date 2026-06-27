@@ -1,9 +1,14 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Database, MessageSquare, LineChart, Settings, Search, Bell, User } from 'lucide-react';
+import { useState } from 'react';
+import { LayoutDashboard, Database, MessageSquare, LineChart, Settings, Search, Bell, User, Menu, X } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 
 export function SaaSLayout() {
   const { userName } = useUser();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
   const navItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
     { name: 'Knowledge Base', icon: <Database size={20} />, path: '/workspace' },
@@ -12,7 +17,7 @@ export function SaaSLayout() {
   ];
 
   return (
-    <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: 'var(--page-bg)', color: 'var(--text-primary)', position: 'relative' }}>
+    <div className="saas-layout-wrapper">
       
       {/* Global Flat Grid Background */}
       <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, overflow: 'hidden', pointerEvents: 'none' }}>
@@ -29,11 +34,15 @@ export function SaaSLayout() {
         }} />
       </div>
       
+      
+      {/* Mobile Overlay */}
+      <div 
+        className={`mobile-overlay ${isMobileMenuOpen ? 'open' : ''}`}
+        onClick={closeMobileMenu}
+      />
+
       {/* Sidebar Navigation */}
-      <aside style={{ 
-        width: 260, background: 'var(--surface-bg)', borderRight: '1px solid var(--surface-border)', 
-        display: 'flex', flexDirection: 'column', padding: '24px 16px', backdropFilter: 'blur(20px)', zIndex: 10
-      }}>
+      <aside className={`saas-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div style={{ padding: '0 8px 32px 8px', display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{ width: 32, height: 32, borderRadius: 8, background: 'linear-gradient(135deg, var(--primary-color), var(--accent-color))', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <MessageSquare size={16} color="white" />
@@ -47,6 +56,7 @@ export function SaaSLayout() {
             <NavLink
               key={item.name}
               to={item.path}
+              onClick={closeMobileMenu}
               className={({ isActive }) => `saas-nav-link ${isActive ? 'active' : ''}`}
               style={{
                 display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, 
@@ -71,10 +81,13 @@ export function SaaSLayout() {
       </aside>
 
       {/* Main Content Area */}
-      <main style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflow: 'hidden' }}>
+      <main className="saas-main">
         
         {/* Top Navbar */}
         <header style={{ height: 64, borderBottom: '1px solid var(--surface-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', background: 'var(--surface-bg)', backdropFilter: 'blur(20px)', zIndex: 10 }}>
+          <button className="mobile-header-toggle" onClick={toggleMobileMenu}>
+            <Menu size={24} color="var(--text-color)" />
+          </button>
           <div style={{ display: 'flex', alignItems: 'center', width: 400, background: 'rgba(79, 70, 229, 0.05)', borderRadius: 8, padding: '8px 12px', border: '1px solid var(--surface-border)' }}>
             <Search size={16} color="var(--text-muted)" style={{ marginRight: 8 }} />
             <input type="text" placeholder="Search commands or files... (Cmd+K)" style={{ background: 'transparent', border: 'none', color: 'var(--text-color)', fontSize: 13, width: '100%', outline: 'none' }} disabled />

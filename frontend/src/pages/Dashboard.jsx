@@ -20,7 +20,7 @@ export function Dashboard() {
   ];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ padding: 40, maxWidth: 1200, margin: '0 auto', width: '100%' }}>
+    <motion.div className="dashboard-wrapper" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       {/* Animated Background Blobs */}
       <motion.div 
         animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3], rotate: [0, 90, 0] }}

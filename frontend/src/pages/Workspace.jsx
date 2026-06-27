@@ -90,10 +90,10 @@ export function Workspace() {
   ) : null;
 
   return (
-    <div style={{ display: 'flex', height: '100%', width: '100%', padding: 24, gap: 24, boxSizing: 'border-box' }}>
+    <div className="workspace-wrapper">
       
       {/* Left Sidebar (Workspace Management) */}
-      <div style={{ width: 340, display: 'flex', flexDirection: 'column', gap: 24, flexShrink: 0 }}>
+      <div className="workspace-sidebar">
         <h2 style={{ fontSize: 18, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8, margin: 0 }}>
           <Globe size={20} color="var(--primary-color)" /> Knowledge Base
         </h2>
@@ -117,15 +117,10 @@ export function Workspace() {
         </div>
       </div>
 
-      {/* Right Content (Chat) */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      {/* Right Content (Chat Interface) */}
+      <div className="workspace-chat-area">
         {selectedSourceId && (
-          <div style={{
-            marginBottom: 16, background: 'rgba(139, 92, 246, 0.1)', 
-            border: '1px solid rgba(139, 92, 246, 0.3)',
-            color: 'var(--text-color)', padding: '10px 16px', borderRadius: 8,
-            fontSize: 14, display: 'flex', alignItems: 'center', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-          }} className="pulse">
+          <div className="source-filter-badge">
             <svg style={{width: 16, height: 16, marginRight: 8}} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>

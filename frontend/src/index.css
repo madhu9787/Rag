@@ -429,3 +429,207 @@ button.danger:hover:not(:disabled) {
   font-size: 12px;
   color: var(--text-muted);
 }
+
+
+/* ==========================================================================
+   Responsive Overrides (Mobile & Tablet)
+   ========================================================================== */
+
+/* SaaS Layout Utilities */
+.saas-layout-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: var(--page-bg);
+  color: var(--text-primary);
+  position: relative;
+}
+
+.saas-sidebar {
+  width: 260px;
+  background: var(--surface-bg);
+  border-right: 1px solid var(--surface-border);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  backdrop-filter: blur(20px);
+  z-index: 50;
+  transition: transform 0.3s ease;
+}
+
+.saas-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.mobile-overlay {
+  display: none;
+}
+
+/* Landing Page Utilities */
+.landing-nav-links {
+  display: flex;
+  gap: 32px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--landing-text-muted);
+}
+
+.landing-nav-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.landing-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+}
+
+/* Workspace Utilities */
+.workspace-wrapper {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  padding: 24px;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+.workspace-sidebar {
+  width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  flex-shrink: 0;
+}
+
+.workspace-chat-area {
+  flex: 1;
+  background: var(--chat-panel-bg);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid var(--surface-border);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mobile-header-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 8px;
+}
+
+@media (max-width: 1024px) {
+  .landing-hero-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 40px;
+  }
+  
+  .landing-hero-grid > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Hide standard nav links on mobile landing page */
+  .landing-nav-links {
+    display: none;
+  }
+  
+  .landing-nav-actions button span {
+    display: none; /* hide text in toggle button */
+  }
+
+  /* SaaS Layout Mobile */
+  .mobile-header-toggle {
+    display: block;
+  }
+
+  .saas-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+  }
+
+  .saas-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .mobile-overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 40;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .mobile-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Workspace Layout Mobile */
+  .workspace-wrapper {
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+    height: auto;
+    min-height: 100%;
+  }
+
+  .workspace-sidebar {
+    width: 100%;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  .workspace-chat-area {
+    min-height: 500px;
+  }
+  
+  /* Dashboard Stats Grid */
+  h1 {
+    font-size: 24px !important;
+  }
+}
+
+/* Dashboard Utilities */
+.dashboard-wrapper {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    padding: 20px;
+  }
+}

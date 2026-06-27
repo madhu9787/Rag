@@ -121,7 +121,7 @@ export function Landing() {
           <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', fontFamily: 'Inter, system-ui, sans-serif' }}>RAG Intelligence System</span>
         </div>
         
-        <div style={{ display: 'flex', gap: 32, fontSize: 14, fontWeight: 600, color: 'var(--landing-text-muted)' }}>
+        <div className="landing-nav-links">
           <span onClick={() => document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' })} style={{ cursor: 'pointer', color: 'var(--landing-text)', display: 'flex', alignItems: 'center', gap: 6, transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--primary-color)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--landing-text)'}>
             <BookOpen size={16} color="var(--primary-color)" fill="var(--primary-color)" /> About
           </span>
@@ -136,7 +136,7 @@ export function Landing() {
           </span>
         </div>
         
-        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+        <div className="landing-nav-actions">
           <button onClick={toggleTheme} style={{ background: 'var(--surface-bg)', border: '1px solid var(--surface-border)', cursor: 'pointer', color: 'var(--text-color)', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 20, fontSize: 13, fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
             {theme === 'light' ? <Moon size={20} color="#3b82f6" /> : <Sun size={20} color="#eab308" fill="#eab308" />} 
             <span>{theme === 'dark' ? 'Light Theme' : 'Dark Theme'}</span>
@@ -179,16 +179,14 @@ export function Landing() {
       </motion.div>
 
       {/* Full-Screen Split Hero */}
-      <div style={{ minHeight: 'calc(100vh - 85px)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 80px', position: 'relative', overflow: 'hidden' }}>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', width: '100%', maxWidth: '1800px', margin: '0 auto', zIndex: 1, gap: 40, alignItems: 'center' }}>
+      <div className="landing-hero-container">
+        <div className="landing-hero-grid">
           
           {/* Left Side: Copy */}
           <motion.div 
             variants={staggerContainer}
             initial="hidden"
             animate="show"
-            style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', paddingRight: '40px' }}
           >
             <motion.div variants={fadeUp} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'transparent', border: '1px solid var(--surface-border)', padding: '6px 14px', borderRadius: 20, fontSize: 13, color: 'var(--landing-text-muted)', marginBottom: 32, fontWeight: 600, width: 'fit-content' }}>
               <Zap size={14} color="var(--primary-color)" />
