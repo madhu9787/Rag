@@ -19,8 +19,11 @@ export function useChat() {
     const assistantId = (Date.now() + 1).toString();
     setMessages(prev => [...prev, { id: assistantId, role: 'assistant', content: '', sources: [] }]);
 
+    // Capture history before adding current question
+    const history = messages.map(m => ({ role: m.role, content: m.content }));
+
     try {
-      await api.streamChat(question, sourceIds, (event, data) => {
+      await api.streamChat(question, sourceIds, history, (event, data) => {
         if (event === 'sources') {
           setMessages(prev => prev.map(m => 
             m.id === assistantId ? { ...m, sources: data } : m

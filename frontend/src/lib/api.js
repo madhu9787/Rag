@@ -31,12 +31,16 @@ export const api = {
     return res.json();
   },
 
-  streamChat(question, sourceIds, onEvent) {
+  streamChat(question, sourceIds, history, onEvent) {
     return new Promise((resolve, reject) => {
       fetch(`${API_BASE}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question, source_ids: sourceIds?.length ? sourceIds : null }),
+        body: JSON.stringify({ 
+          question, 
+          source_ids: sourceIds?.length ? sourceIds : null,
+          chat_history: history?.length ? history : null
+        }),
       })
       .then(async (response) => {
         if (!response.ok) {

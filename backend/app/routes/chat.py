@@ -30,9 +30,15 @@ async def chat(request: ChatRequest):
     # Log the query for analytics
     analytics_service.log_query()
 
+    # Rewrite query if we have chat history
+    search_query = request.question
+    if request.chat_history:
+        search_query = await llm_service.rewrite_query(request.question, request.chat_history)
+        print(f"[chat] Original: {request.question} -> Rewritten: {search_query}")
+
     # Retrieve relevant chunks — non-blocking (ONNX runs in thread pool)
     source_id = request.source_ids[0] if request.source_ids else None
-    chunks = await retriever.retrieve_async(question=request.question, source_id=source_id)
+    chunks = await retriever.retrieve_async(question=search_query, source_id=source_id)
 
     if not chunks:
         raise HTTPException(
@@ -61,7 +67,7 @@ async def chat(request: ChatRequest):
             }
 
             # Stream LLM response token by token
-            async for token in llm_service.generate_stream(request.question, context):
+            async for token in llm_service.generate_stream(request.question, context, request.chat_history):
                 yield {
                     "event": "token",
                     "data": json.dumps({"content": token}),

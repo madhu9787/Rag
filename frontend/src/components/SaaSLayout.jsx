@@ -93,10 +93,6 @@ export function SaaSLayout() {
             <input type="text" placeholder="Search commands or files... (Cmd+K)" style={{ background: 'transparent', border: 'none', color: 'var(--text-color)', fontSize: 13, width: '100%', outline: 'none' }} disabled />
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
-            <button style={{ background: 'transparent', border: 'none', padding: 8, cursor: 'pointer', position: 'relative' }}>
-              <Bell size={20} color="var(--text-muted)" />
-              <span style={{ position: 'absolute', top: 8, right: 10, width: 8, height: 8, background: 'var(--primary-color)', borderRadius: 4 }}></span>
-            </button>
           </div>
         </header>
 

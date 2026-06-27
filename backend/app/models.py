@@ -36,6 +36,7 @@ class IngestStatusResponse(BaseModel):
 class ChatRequest(BaseModel):
     question: str
     source_ids: Optional[list[str]] = None
+    chat_history: Optional[list[dict]] = None
 
 
 class SourceResponse(BaseModel):

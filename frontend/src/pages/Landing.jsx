@@ -179,7 +179,7 @@ export function Landing() {
       </motion.div>
 
       {/* Full-Screen Split Hero */}
-      <div className="landing-hero-container">
+      <div className="landing-hero-container" style={{ paddingTop: '100px' }}>
         <div className="landing-hero-grid">
           
           {/* Left Side: Copy */}
