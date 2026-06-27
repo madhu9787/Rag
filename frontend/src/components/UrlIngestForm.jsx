@@ -4,7 +4,7 @@ export function UrlIngestForm({ onSubmit, isIngesting, isReady }) {
   const [url, setUrl] = useState('');
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [maxDepth, setMaxDepth] = useState(2);
-  const [maxPages, setMaxPages] = useState(50);
+  const [maxPages, setMaxPages] = useState(100);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -62,8 +62,8 @@ export function UrlIngestForm({ onSubmit, isIngesting, isReady }) {
                   type="number" 
                   id="depth" 
                   min="0" max="5" 
-                  value={maxDepth}
-                  onChange={(e) => setMaxDepth(parseInt(e.target.value))}
+                  value={isNaN(maxDepth) ? '' : maxDepth}
+                  onChange={(e) => setMaxDepth(e.target.value === '' ? '' : parseInt(e.target.value))}
                   disabled={isIngesting}
                   style={{width: 60, padding: '4px 8px'}}
                 />
@@ -74,8 +74,8 @@ export function UrlIngestForm({ onSubmit, isIngesting, isReady }) {
                   type="number" 
                   id="pages" 
                   min="1" max="200" 
-                  value={maxPages}
-                  onChange={(e) => setMaxPages(parseInt(e.target.value))}
+                  value={isNaN(maxPages) ? '' : maxPages}
+                  onChange={(e) => setMaxPages(e.target.value === '' ? '' : parseInt(e.target.value))}
                   disabled={isIngesting}
                   style={{width: 60, padding: '4px 8px'}}
                 />

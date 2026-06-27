@@ -512,6 +512,8 @@ button.danger:hover:not(:disabled) {
   flex-direction: column;
   gap: 24px;
   flex-shrink: 0;
+  overflow-y: auto;
+  padding-right: 8px; /* For scrollbar breathing room */
 }
 
 .workspace-chat-area {

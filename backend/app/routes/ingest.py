@@ -19,11 +19,35 @@ async def start_ingest(request: IngestRequest):
     source_id = str(uuid.uuid4())[:8]
     job_id = task_manager.create_job(source_id=source_id)
 
+    chunk_buffer = {"ids": [], "docs": [], "metas": []}
+    buffer_lock = asyncio.Lock()
+    pending_tasks = set()
+
+    async def flush_buffer(force=False):
+        async with buffer_lock:
+            if not chunk_buffer["ids"]:
+                return
+            if not force and len(chunk_buffer["ids"]) < 200:
+                return
+
+            ids = chunk_buffer["ids"][:]
+            docs = chunk_buffer["docs"][:]
+            metas = chunk_buffer["metas"][:]
+            
+            chunk_buffer["ids"].clear()
+            chunk_buffer["docs"].clear()
+            chunk_buffer["metas"].clear()
+            
+        if ids:
+            try:
+                await vector_store.add_documents_async(ids, docs, metas)
+            except Exception as e:
+                print(f"[ingest] Failed to flush buffer: {e}")
+
     async def index_page_background(page, now: str):
         """
-        Chunk + embed + store a single page.
-        Runs as a fire-and-forget asyncio task so it NEVER blocks the crawl loop.
-        Uses add_documents_async to offload ONNX to a thread pool.
+        Chunk a single page and add to buffer.
+        If buffer is large enough, flushes to ChromaDB.
         """
         try:
             chunks = chunker.chunk_text(
@@ -42,8 +66,13 @@ async def start_ingest(request: IngestRequest):
                 ids = [str(uuid.uuid4()) for _ in chunks]
                 docs = [c["content"] for c in chunks]
                 metas = [c["metadata"] for c in chunks]
-                # Non-blocking: runs ChromaDB ONNX in thread pool
-                await vector_store.add_documents_async(ids, docs, metas)
+                
+                async with buffer_lock:
+                    chunk_buffer["ids"].extend(ids)
+                    chunk_buffer["docs"].extend(docs)
+                    chunk_buffer["metas"].extend(metas)
+                    
+                await flush_buffer(force=False)
 
             # Flip is_ready on the first successfully indexed page
             task_manager.mark_page_indexed(job_id)
@@ -51,13 +80,15 @@ async def start_ingest(request: IngestRequest):
         except Exception as e:
             # Log but don't crash the whole crawl
             print(f"[ingest] Failed to index {page.url}: {e}")
+        finally:
+            pending_tasks.discard(asyncio.current_task())
 
     async def ingest_pipeline():
         """
-        Streaming pipeline:
-        - Crawler fetches pages in parallel batches (concurrency=20)
-        - Each page is immediately dispatched to index_page_background as a
-          fire-and-forget asyncio.Task — the crawl loop never waits for it
+        Streaming pipeline with chunk buffering:
+        - Crawler fetches pages in parallel batches
+        - Each page is chunked and buffered
+        - Buffer is flushed to vector store in large batches
         """
         crawler = WebCrawler(
             max_depth=min(request.max_depth, MAX_CRAWL_DEPTH),
@@ -69,8 +100,8 @@ async def start_ingest(request: IngestRequest):
             task_manager.update_progress(job_id, pages_crawled, pages_total, page_info)
 
         async def on_page_ready(page):
-            # Fire-and-forget: crawl loop continues immediately, index happens in background
-            asyncio.create_task(index_page_background(page, now))
+            task = asyncio.create_task(index_page_background(page, now))
+            pending_tasks.add(task)
 
         pages = await crawler.crawl(
             request.url,
@@ -84,16 +115,18 @@ async def start_ingest(request: IngestRequest):
             )
             return
 
-        # Wait for all background indexing tasks to finish before marking complete
-        # Give them up to 60s after crawl finishes
-        await asyncio.sleep(2)
+        # Wait for all background chunking tasks to complete
+        if pending_tasks:
+            await asyncio.gather(*pending_tasks, return_exceptions=True)
 
-        # Poll until all crawled pages are indexed (or timeout after 60s)
-        for _ in range(30):
-            job = task_manager.get_status(job_id)
-            if job and job.get("indexed_count", 0) >= len(pages):
-                break
-            await asyncio.sleep(2)
+        # Flush any remaining chunks in the buffer
+        await flush_buffer(force=True)
+
+        # Ensure UI knows all pages are indexed
+        job = task_manager.get_status(job_id)
+        if job and job.get("indexed_count", 0) < len(pages):
+            for _ in range(len(pages) - job.get("indexed_count", 0)):
+                task_manager.mark_page_indexed(job_id)
 
         task_manager.set_status(job_id, "completed")
 

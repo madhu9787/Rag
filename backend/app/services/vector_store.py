@@ -5,8 +5,10 @@ from typing import Optional, Any
 import asyncio
 import concurrent.futures
 
+import os
+
 # Thread pool dedicated to blocking ChromaDB / ONNX embedding calls
-_EMBED_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=2)
+_EMBED_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=min(32, (os.cpu_count() or 1) + 4))
 
 
 class VectorStore:
@@ -42,7 +44,7 @@ class VectorStore:
     ) -> None:
         """Blocking add — called from the thread pool, never the event loop."""
         import time
-        batch_size = 100
+        batch_size = 400
         for i in range(0, len(ids), batch_size):
             end = i + batch_size
             for attempt in range(3):

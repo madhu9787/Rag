@@ -1,7 +1,7 @@
 const API_BASE = import.meta.env.VITE_API_BASE || '/api';
 
 export const api = {
-  async ingestUrl(url, maxDepth = 2, maxPages = 50) {
+  async ingestUrl(url, maxDepth = 2, maxPages = 100) {
     const res = await fetch(`${API_BASE}/ingest`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
