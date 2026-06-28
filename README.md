@@ -105,28 +105,28 @@ flowchart TB
     classDef data fill:#8b5cf6,stroke:#5b21b6,stroke-width:2px,color:#fff
     classDef ai fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#fff
 
-    subgraph Client [Client Tier (React)]
+    subgraph Client ["Client Tier (React)"]
         A[React UI Component]:::frontend
         B[SSE Event Listener]:::frontend
     end
 
-    subgraph API [API Tier (FastAPI)]
+    subgraph API ["API Tier (FastAPI)"]
         C[Ingestion Router]:::backend
-        D[Chat Router / Context Builder]:::backend
+        D["Chat Router / Context Builder"]:::backend
     end
 
-    subgraph Workers [Async Worker Tier]
-        E[Web Crawler & Scraper]:::backend
-        F[Text Chunker & Cleaner]:::backend
+    subgraph Workers ["Async Worker Tier"]
+        E["Web Crawler & Scraper"]:::backend
+        F["Text Chunker & Cleaner"]:::backend
     end
 
-    subgraph Data [Data Tier]
-        G[(ChromaDB Vector Store)]:::data
-        H[ONNX Embedding Model]:::data
+    subgraph Data ["Data Tier"]
+        G[("ChromaDB Vector Store")]:::data
+        H["ONNX Embedding Model"]:::data
     end
 
-    subgraph External [External AI Services]
-        I{Groq Llama-3 API}:::ai
+    subgraph External ["External AI Services"]
+        I{"Groq Llama-3 API"}:::ai
     end
 
     A -->|Submit URL| C
