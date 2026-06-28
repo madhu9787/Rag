@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Moon, Sun, BookOpen, Code, Sparkles, ShieldCheck, Zap, LineChart, LayoutDashboard } from 'lucide-react';
+import { ArrowRight, Moon, Sun, BookOpen, Code, Sparkles, ShieldCheck, Zap, LineChart, LayoutDashboard, Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { AnimatedTerminal } from '../components/AnimatedTerminal';
 import { AnimatedArchitecture } from '../components/AnimatedArchitecture';
@@ -9,6 +9,7 @@ import { AnimatedRobot } from '../components/AnimatedRobot';
 export function Landing() {
   const [theme, setTheme] = useState(document.documentElement.getAttribute('data-theme') || 'dark');
   const [activeFaq, setActiveFaq] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
@@ -136,22 +137,48 @@ export function Landing() {
           </span>
         </div>
         
-        <div className="landing-nav-actions">
-          <button onClick={toggleTheme} style={{ background: 'var(--surface-bg)', border: '1px solid var(--surface-border)', cursor: 'pointer', color: 'var(--text-color)', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 20, fontSize: 13, fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-            {theme === 'light' ? <Moon size={20} color="#3b82f6" /> : <Sun size={20} color="#eab308" fill="#eab308" />} 
-            <span>{theme === 'dark' ? 'Light Theme' : 'Dark Theme'}</span>
+        <div className="landing-nav-actions" style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button className="landing-mobile-menu-btn" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} style={{ background: 'transparent', border: 'none', color: 'var(--landing-text)', cursor: 'pointer', alignItems: 'center', padding: '8px' }}>
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+          
+          <button onClick={toggleTheme} style={{ background: 'var(--surface-bg)', border: '1px solid var(--surface-border)', cursor: 'pointer', color: 'var(--text-color)', display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', borderRadius: 20, fontSize: 13, fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+            {theme === 'light' ? <Moon size={18} color="#3b82f6" /> : <Sun size={18} color="#eab308" fill="#eab308" />} 
+            <span className="landing-theme-text">{theme === 'dark' ? 'Light' : 'Dark'}</span>
           </button>
           <Link to="/dashboard" style={{ textDecoration: 'none' }}>
             <motion.button 
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              style={{ background: 'var(--text-color)', color: 'var(--bg-color)', padding: '10px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600, border: 'none', display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+              style={{ background: 'var(--primary-color)', color: 'white', padding: '8px 16px', borderRadius: 8, fontSize: 14, fontWeight: 600, border: 'none', display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)' }}
             >
-              <LayoutDashboard size={16} /> Open Dashboard
+              <span className="landing-dashboard-text">Dashboard</span> <ArrowRight size={16} />
             </motion.button>
           </Link>
         </div>
       </motion.nav>
+
+      {/* Mobile Menu Dropdown */}
+      {isMobileMenuOpen && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{ position: 'fixed', top: 72, left: 0, right: 0, background: 'var(--nav-bg)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--surface-border)', zIndex: 99, padding: '16px 24px', display: 'flex', flexDirection: 'column', gap: 16 }}
+        >
+          <span onClick={() => { setIsMobileMenuOpen(false); document.getElementById('about-section')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ cursor: 'pointer', color: 'var(--landing-text)', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--surface-border)', fontSize: 16, fontWeight: 600 }}>
+            <BookOpen size={20} color="var(--primary-color)" /> About
+          </span>
+          <span onClick={() => { setIsMobileMenuOpen(false); document.getElementById('how-to-use-section')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ cursor: 'pointer', color: 'var(--landing-text)', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--surface-border)', fontSize: 16, fontWeight: 600 }}>
+            <Code size={20} color="var(--accent-color)" /> How to Use
+          </span>
+          <span onClick={() => { setIsMobileMenuOpen(false); document.getElementById('features-section')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ cursor: 'pointer', color: 'var(--landing-text)', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid var(--surface-border)', fontSize: 16, fontWeight: 600 }}>
+            <Sparkles size={20} color="var(--primary-color)" /> Features
+          </span>
+          <span onClick={() => { setIsMobileMenuOpen(false); document.getElementById('timeline-section')?.scrollIntoView({ behavior: 'smooth' }); }} style={{ cursor: 'pointer', color: 'var(--landing-text)', display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', fontSize: 16, fontWeight: 600 }}>
+            <ShieldCheck size={20} color="var(--accent-color)" /> Why & How It Works
+          </span>
+        </motion.div>
+      )}
 
             {/* Floating Animated Robot */}
       <motion.div

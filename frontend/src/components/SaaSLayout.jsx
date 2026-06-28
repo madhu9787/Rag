@@ -84,15 +84,18 @@ export function SaaSLayout() {
       <main className="saas-main">
         
         {/* Top Navbar */}
-        <header style={{ height: 64, borderBottom: '1px solid var(--surface-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 32px', background: 'var(--surface-bg)', backdropFilter: 'blur(20px)', zIndex: 10 }}>
-          <button className="mobile-header-toggle" onClick={toggleMobileMenu}>
-            <Menu size={24} color="var(--text-color)" />
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', width: 400, background: 'rgba(79, 70, 229, 0.05)', borderRadius: 8, padding: '8px 12px', border: '1px solid var(--surface-border)' }}>
-            <Search size={16} color="var(--text-muted)" style={{ marginRight: 8 }} />
-            <input type="text" placeholder="Search commands or files... (Cmd+K)" style={{ background: 'transparent', border: 'none', color: 'var(--text-color)', fontSize: 13, width: '100%', outline: 'none' }} disabled />
+        <header style={{ height: 64, borderBottom: '1px solid var(--surface-border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', background: 'var(--surface-bg)', backdropFilter: 'blur(20px)', zIndex: 10 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <button className="mobile-header-toggle" onClick={toggleMobileMenu} style={{ background: 'transparent', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <Menu size={24} color="var(--text-color)" />
+            </button>
+          </div>
+          <div className="header-search-bar" style={{ display: 'flex', alignItems: 'center', flex: 1, maxWidth: 400, background: 'rgba(79, 70, 229, 0.05)', borderRadius: 8, padding: '8px 12px', border: '1px solid var(--surface-border)', margin: '0 16px' }}>
+            <Search size={16} color="var(--text-muted)" style={{ marginRight: 8, flexShrink: 0 }} />
+            <input type="text" placeholder="Search..." style={{ background: 'transparent', border: 'none', color: 'var(--text-color)', fontSize: 13, width: '100%', outline: 'none' }} disabled />
           </div>
           <div style={{ display: 'flex', gap: 16 }}>
+            {/* Future top-right icons can go here */}
           </div>
         </header>
 

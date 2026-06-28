@@ -550,14 +550,18 @@ button.danger:hover:not(:disabled) {
   }
 }
 
-@media (max-width: 768px) {
-  /* Hide standard nav links on mobile landing page */
+@media (max-width: 1024px) {
+  /* Landing Page Mobile Navbar */
   .landing-nav-links {
     display: none;
   }
   
-  .landing-nav-actions button span {
-    display: none; /* hide text in toggle button */
+  .landing-theme-text, .landing-dashboard-text {
+    display: none;
+  }
+  
+  .landing-mobile-menu-btn {
+    display: flex;
   }
 
   /* SaaS Layout Mobile */
@@ -618,6 +622,18 @@ button.danger:hover:not(:disabled) {
   /* Dashboard Stats Grid */
   h1 {
     font-size: 24px !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  .landing-mobile-menu-btn {
+    display: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-search-bar {
+    display: none !important;
   }
 }
 
