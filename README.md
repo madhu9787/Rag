@@ -4,7 +4,7 @@
 Nexus AI is a highly scalable, full-stack chatbot application that leverages Retrieval-Augmented Generation (RAG) to provide hyper-accurate answers based on web content. It recursively scrapes any provided website, processes the text into vector embeddings, and uses a powerful Large Language Model to converse with the user while citing exact sources.
 
 ## Problem Statement
-Modern enterprises struggle to extract actionable insights from their own unstructured data (websites, docs, wikis). Off-the-shelf LLMs hallucinate frequently and lack access to proprietary, real-time organizational knowledge.
+RAG-Powered Website Chatbot: Create a chatbot that can ingest any given URL and recursively scrape relevant content from linked pages, then use Retrieval-Augmented Generation (RAG) to answer user questions accurately based on the collected content. Ensure minimal latency and robust handling of structured and unstructured data.
 
 ## What I Made
 I built a complete end-to-end RAG system with a stunning, responsive glassmorphism frontend and an asynchronous, high-performance Python backend. It allows users to dynamically build a trusted knowledge base from any website and query it in real-time, turning unstructured web data into actionable, citable intelligence.
@@ -13,9 +13,9 @@ I built a complete end-to-end RAG system with a stunning, responsive glassmorphi
 To solve this, I designed a production-grade **Retrieval-Augmented Generation (RAG)** pipeline that dynamically grounds a foundational LLM (Llama-3.3-70b) in verifiable, user-provided context. By decoupling the ingestion engine from the retrieval/inference engine, I maximized throughput and scalability. I avoided heavy browser automation in favor of highly optimized asynchronous parsing to make the system fast enough for real-time enterprise use.
 
 ## Detailed Solution Approach
-*Architectural Analysis and System Design Justification*
+*Brief explanation of the solution approach*
 
-As a Senior AI/ML Engineer, here is exactly how and why I engineered each part of the system:
+Here is a breakdown of how the system was engineered:
 1. **Asynchronous I/O Scraping (httpx + lxml):** Rather than relying on heavy, blocking browser automation (like Selenium/Puppeteer), I implemented an async headless crawler. Using `lxml`—a highly optimized C-parser—drastically reduced parsing latency, allowing the system to ingest vast documentation trees in seconds rather than minutes.
 2. **Deterministic Semantic Chunking:** I engineered the text-splitting logic to use sliding windows (1000 tokens, 200 overlap). This ensures semantic boundaries are preserved, preventing the loss of critical context that often plagues naive chunking algorithms.
 3. **Local Vectorization (ChromaDB + ONNX):** I opted for ChromaDB running locally with an ONNX-optimized embedding model. This eliminates network latency during the critical vectorization phase and significantly reduces API costs, making the architecture highly cost-effective and secure.
