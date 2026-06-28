@@ -20,7 +20,16 @@ export function MessageBubble({ message }) {
         
         {!isUser && message.sources && message.sources.length > 0 && (
           <div style={{marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--surface-border)'}}>
-            <p style={{fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5}}>Sources cited</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <p style={{fontSize: 11, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: 0.5, margin: 0}}>Sources cited</p>
+              {message.confidence !== undefined && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                  <span style={{ fontSize: 11, fontWeight: 600, color: message.confidence > 80 ? '#10b981' : message.confidence > 60 ? '#f59e0b' : '#ef4444' }}>
+                    {message.confidence}% Confidence
+                  </span>
+                </div>
+              )}
+            </div>
             <div style={{display: 'flex', flexWrap: 'wrap', gap: 8}}>
               {message.sources.map((source, idx) => {
                 let hostname = source.url;

@@ -32,6 +32,10 @@ export function useChat() {
           setMessages(prev => prev.map(m => 
             m.id === assistantId ? { ...m, content: m.content + data.content } : m
           ));
+        } else if (event === 'confidence') {
+          setMessages(prev => prev.map(m => 
+            m.id === assistantId ? { ...m, confidence: data.score } : m
+          ));
         } else if (event === 'error') {
           setError(data.error);
         }

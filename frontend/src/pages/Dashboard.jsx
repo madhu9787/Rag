@@ -3,14 +3,39 @@ import { useSources } from '../hooks/useSources';
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useUser } from '../context/UserContext';
-
+import { useNavigate } from 'react-router-dom';
+import WebsiteAnalysis from '../components/WebsiteAnalysis';
+import { api } from '../lib/api';
+import { useState } from 'react';
 export function Dashboard() {
   const { sources, fetchSources } = useSources();
   const { userName } = useUser();
+  const navigate = useNavigate();
+  
+  const [analyzingSourceId, setAnalyzingSourceId] = useState(null);
+  const [analysisData, setAnalysisData] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   useEffect(() => {
     fetchSources();
   }, [fetchSources]);
+
+  const handleAnalyze = async (sourceId) => {
+    setIsAnalyzing(true);
+    setAnalyzingSourceId(sourceId);
+    try {
+      const data = await api.analyzeWebsite(sourceId);
+      setAnalysisData(data);
+    } catch (e) {
+      alert("Failed to analyze website");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleQuestionClick = (question) => {
+    navigate('/workspace', { state: { initialQuestion: question, sourceId: analyzingSourceId } });
+  };
 
   const stats = [
     { label: 'Websites Indexed', value: sources.length, icon: <Globe color="#3b82f6" /> },
@@ -96,6 +121,7 @@ export function Dashboard() {
                 <th style={{ padding: '20px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1px', fontWeight: 600 }}>Source URL</th>
                 <th style={{ padding: '20px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1px', fontWeight: 600 }}>Pages</th>
                 <th style={{ padding: '20px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1px', fontWeight: 600 }}>Status</th>
+                <th style={{ padding: '20px 24px', fontSize: 13, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '1px', fontWeight: 600 }}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -117,12 +143,38 @@ export function Dashboard() {
                       ACTIVE
                     </span>
                   </td>
+                  <td style={{ padding: '20px 24px' }}>
+                    <button 
+                      onClick={() => handleAnalyze(s.id)}
+                      disabled={isAnalyzing && analyzingSourceId === s.id}
+                      style={{
+                        background: 'rgba(139, 92, 246, 0.1)',
+                        color: '#a78bfa',
+                        border: '1px solid rgba(139, 92, 246, 0.2)',
+                        padding: '6px 12px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: '600',
+                        cursor: isAnalyzing ? 'wait' : 'pointer'
+                      }}
+                    >
+                      {isAnalyzing && analyzingSourceId === s.id ? 'Analyzing...' : 'Analyze Website'}
+                    </button>
+                  </td>
                 </motion.tr>
               ))}
             </tbody>
           </table>
         )}
       </motion.div>
+
+      {analysisData && (
+        <WebsiteAnalysis 
+          analysis={analysisData} 
+          onClose={() => setAnalysisData(null)}
+          onQuestionClick={handleQuestionClick}
+        />
+      )}
     </motion.div>
   );
 }

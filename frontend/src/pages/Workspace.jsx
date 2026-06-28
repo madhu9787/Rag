@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { UrlIngestForm } from '../components/UrlIngestForm';
 import { CrawlStatus } from '../components/CrawlStatus';
 import { SourcesList } from '../components/SourcesList';
@@ -7,10 +8,23 @@ import { useIngest } from '../hooks/useIngest';
 import { useSources } from '../hooks/useSources';
 import { useChat } from '../hooks/useChat';
 import { Globe } from 'lucide-react';
+import WebsiteAnalysis from '../components/WebsiteAnalysis';
+import { api } from '../lib/api';
 
 export function Workspace() {
+  const location = useLocation();
   const [selectedSourceId, setSelectedSourceId] = useState(null);
   const [toast, setToast] = useState(null);
+  
+  const [analyzingSourceId, setAnalyzingSourceId] = useState(null);
+  const [analysisData, setAnalysisData] = useState(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.sourceId) {
+      setSelectedSourceId(location.state.sourceId);
+    }
+  }, [location.state?.sourceId]);
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
@@ -42,10 +56,18 @@ export function Workspace() {
   } = useChat();
 
   useEffect(() => {
-    if (activeSourceId && !selectedSourceId) {
+    if (activeSourceId && !selectedSourceId && !location.state?.sourceId) {
       setSelectedSourceId(activeSourceId);
     }
-  }, [activeSourceId, selectedSourceId]);
+  }, [activeSourceId, selectedSourceId, location.state?.sourceId]);
+
+  useEffect(() => {
+    if (location.state?.initialQuestion && isReady) {
+      handleSendMessage(location.state.initialQuestion);
+      // clear state so it doesn't fire again on reload
+      window.history.replaceState({}, document.title)
+    }
+  }, [location.state?.initialQuestion, isReady]);
 
   useEffect(() => {
     if (ingestStatus?.status === 'completed') {
@@ -64,6 +86,24 @@ export function Workspace() {
   const handleSendMessage = (text) => {
     const sourceIds = selectedSourceId ? [selectedSourceId] : null;
     sendMessage(text, sourceIds);
+  };
+
+  const handleAnalyze = async (sourceId) => {
+    setIsAnalyzing(true);
+    setAnalyzingSourceId(sourceId);
+    try {
+      const data = await api.analyzeWebsite(sourceId);
+      setAnalysisData(data);
+    } catch (e) {
+      showToast("Failed to analyze website", "error");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleQuestionClick = (question) => {
+    setSelectedSourceId(analyzingSourceId); // switch to the source being analyzed
+    handleSendMessage(question);
   };
 
   const toastUI = toast ? (
@@ -104,16 +144,19 @@ export function Workspace() {
           isReady={isReady}
         />
 
-        <CrawlStatus status={ingestStatus} />
-
-        <div style={{ flex: 1, minHeight: 0 }}>
+        <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <SourcesList
             sources={sources}
             isLoading={isSourcesLoading}
             onDelete={deleteSource}
             onSelect={setSelectedSourceId}
+            onAnalyze={handleAnalyze}
             selectedId={selectedSourceId}
+            isAnalyzing={isAnalyzing}
+            analyzingSourceId={analyzingSourceId}
           />
+
+          <CrawlStatus status={ingestStatus} />
         </div>
       </div>
 
@@ -145,6 +188,14 @@ export function Workspace() {
           hasSources={chatEnabled}
         />
       </div>
+
+      {analysisData && (
+        <WebsiteAnalysis 
+          analysis={analysisData} 
+          onClose={() => setAnalysisData(null)}
+          onQuestionClick={handleQuestionClick}
+        />
+      )}
 
       {toastUI}
     </div>

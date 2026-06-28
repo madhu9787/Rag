@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import CORS_ORIGINS
-from app.routes import ingest, chat, sources, analytics
+from app.routes import ingest, chat, sources, analytics, analysis
 import asyncio
 
 
@@ -62,6 +62,7 @@ app.include_router(ingest.router)
 app.include_router(chat.router)
 app.include_router(sources.router)
 app.include_router(analytics.router)
+app.include_router(analysis.router)
 
 
 @app.get("/api/health")

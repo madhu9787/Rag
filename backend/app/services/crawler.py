@@ -101,7 +101,7 @@ class WebCrawler:
 
     def _extract_content(self, html: str, url: str) -> tuple[str, str, list[str]]:
         """Parse HTML → extract title, clean markdown content, and links."""
-        soup = BeautifulSoup(html, "html.parser")
+        soup = BeautifulSoup(html, "lxml")
 
         # Extract title
         title = ""

@@ -51,19 +51,33 @@ async def chat(request: ChatRequest):
 
     sources = []
     seen_urls: set[str] = set()
+    total_score = 0
     for chunk in chunks:
+        total_score += chunk.get("score", 0)
         url = chunk["metadata"].get("page_url", "")
         title = chunk["metadata"].get("page_title", "")
         if url and url not in seen_urls:
             seen_urls.add(url)
             sources.append({"url": url, "title": title})
+            
+    # Calculate average confidence based on flashrank scores
+    # FlashRank scores are typically raw logits, but higher is better.
+    # We will normalize this loosely to a percentage for UI.
+    avg_score = (total_score / len(chunks)) if chunks else 0
+    # A crude mapping: assume scores > 0.9 are very high confidence, 
+    # adjust as needed for the specific model. We'll bound it between 50-99%
+    confidence_pct = min(99, max(50, int(avg_score * 100)))
 
     async def event_generator():
         try:
-            # Send sources first so frontend can display them immediately
+            # Send sources and confidence first so frontend can display them immediately
             yield {
                 "event": "sources",
                 "data": json.dumps(sources),
+            }
+            yield {
+                "event": "confidence",
+                "data": json.dumps({"score": confidence_pct}),
             }
 
             # Stream LLM response token by token

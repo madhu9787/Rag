@@ -50,3 +50,12 @@ class SourceResponse(BaseModel):
 
 class SourcesListResponse(BaseModel):
     sources: list[SourceResponse]
+
+
+class WebsiteAnalysisResponse(BaseModel):
+    executive_summary: str
+    main_topics: list[str]
+    missing_information: list[str]
+    target_audience: str
+    suggested_questions: list[str]
+    coverage_score: int

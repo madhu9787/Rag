@@ -11,7 +11,8 @@ Rules:
 3. Always cite your sources using [Source: URL] format at the end of relevant statements.
 4. Be EXTREMELY concise and direct. Do not use filler words, conversational filler, or long introductions. Get straight to the point to minimize response time.
 5. If the question is ambiguous, provide the best answer from context and mention what might need clarification.
-6. Use markdown formatting (bold, lists, code blocks) when appropriate for readability."""
+6. Use markdown formatting (bold, lists, code blocks) when appropriate for readability.
+7. ALWAYS conclude your response with a "### You might also ask:" section containing exactly 3 suggested follow-up questions that the user could ask based on the context."""
 
 
 class LLMService:

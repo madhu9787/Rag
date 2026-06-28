@@ -16,10 +16,10 @@ Nexus AI is a highly scalable, full-stack chatbot application that leverages Ret
 - **FastAPI**: Used to build a robust, high-performance asynchronous backend API.
 - **Uvicorn**: Used as the lightning-fast ASGI server to run the FastAPI backend.
 - **Python (3.11+)**: Used as the core backend programming language for its rich AI ecosystem.
-- **Groq (Llama-3.3-70b-versatile)**: Used as the core LLM engine for ultra-fast, high-quality text generation.
+- **Groq (Llama-3.3-70b-versatile)**: Used as the core LLM engine for ultra-fast, high-quality text generation and website analysis.
 - **ChromaDB**: Used as the local vector database to store and query text embeddings efficiently.
 - **Sentence-Transformers (ONNX)**: Used built-in with ChromaDB to convert raw text chunks into mathematical vectors.
-- **httpx & BeautifulSoup4**: Used for fast, asynchronous, headless web scraping and HTML parsing without heavy browser overhead.
+- **httpx, BeautifulSoup4 & lxml**: Used for ultra-fast, asynchronous, headless web scraping and high-performance HTML parsing without heavy browser overhead.
 
 ## 5. Links
 - **Live Deployment:** [https://rag-woad.vercel.app/](https://rag-woad.vercel.app/)
@@ -75,10 +75,10 @@ npm run dev
 7. Read the AI's response and click on the generated citation chips to verify the exact source page.
 
 ## 9. Solution Approach
-- **Phase 1: Ingestion & Scraping:** Instead of using heavy browser automation, I utilized asynchronous HTTP requests (`httpx`) and `BeautifulSoup`. This ensures the scraper is extremely fast and can easily run on serverless cloud platforms.
+- **Phase 1: Ingestion & Scraping:** Instead of using heavy browser automation, I utilized asynchronous HTTP requests (`httpx`), `BeautifulSoup`, and the high-speed `lxml` C-parser. This ensures the scraper is extremely fast and can easily run on serverless cloud platforms.
 - **Phase 2: Chunking & Embedding:** The extracted raw text is intelligently split into overlapping chunks (1000 tokens) using Langchain to preserve context. These chunks are embedded using an ONNX-optimized embedding model and stored in ChromaDB.
-- **Phase 3: Hybrid Retrieval:** When a user asks a question, the query is vectorized and mathematically compared to the database. The top `K` most relevant chunks are retrieved.
-- **Phase 4: Contextual Synthesis & Streaming:** The retrieved context is injected into a specialized prompt and sent to the Groq LLM. The LLM's response is streamed back to the frontend token-by-token using Server-Sent Events (SSE) for a zero-latency feel.
+- **Phase 3: Hybrid Retrieval & Analysis:** When a user asks a question, the query is vectorized and mathematically compared to the database. The top `K` most relevant chunks are retrieved along with a calculated **Confidence Score**. Users can also run a deep **AI Website Analysis** to generate an executive summary, identify knowledge gaps, and extract suggested questions.
+- **Phase 4: Contextual Synthesis & Streaming:** The retrieved context is injected into a specialized prompt and sent to the Groq LLM. The LLM's response (including dynamic follow-up questions) is streamed back to the frontend token-by-token using Server-Sent Events (SSE) for a zero-latency feel.
 
 ## 10. Architecture Diagram
 ```mermaid
@@ -121,6 +121,9 @@ The architecture follows a classic decoupled client-server model optimized for A
 
 ### Working
 ![Working](output/working.png)
+
+### AI Analysis Report
+![AI Analysis Report](output/Analyzereport.png)
 
 ### Analytics
 ![Analytics](output/analytics.png)

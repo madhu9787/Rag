@@ -31,6 +31,12 @@ export const api = {
     return res.json();
   },
 
+  async analyzeWebsite(sourceId) {
+    const res = await fetch(`${API_BASE}/analyze/${sourceId}`);
+    if (!res.ok) throw new Error('Failed to analyze website');
+    return res.json();
+  },
+
   streamChat(question, sourceIds, history, onEvent) {
     return new Promise((resolve, reject) => {
       fetch(`${API_BASE}/chat`, {

@@ -1,4 +1,4 @@
-export function SourcesList({ sources, isLoading, onDelete, onSelect, selectedId }) {
+export function SourcesList({ sources, isLoading, onDelete, onSelect, onAnalyze, selectedId, isAnalyzing, analyzingSourceId }) {
   if (isLoading && sources.length === 0) {
     return (
       <div className="glass-surface" style={{padding: 20, textAlign: 'center'}}>
@@ -44,22 +44,44 @@ export function SourcesList({ sources, isLoading, onDelete, onSelect, selectedId
               </div>
             </div>
             
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (confirm('Delete this source? This cannot be undone.')) {
-                  onDelete(source.id);
-                  if (selectedId === source.id) onSelect(null);
-                }
-              }}
-              className="danger"
-              style={{padding: 6, opacity: 0.7}}
-              title="Delete source"
-            >
-              <svg style={{width: 16, height: 16}} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAnalyze(source.id);
+                }}
+                disabled={isAnalyzing && analyzingSourceId === source.id}
+                style={{
+                  background: 'rgba(139, 92, 246, 0.1)',
+                  color: '#a78bfa',
+                  border: '1px solid rgba(139, 92, 246, 0.2)',
+                  padding: '4px 10px',
+                  borderRadius: '16px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  cursor: isAnalyzing ? 'wait' : 'pointer'
+                }}
+                title="Analyze this website"
+              >
+                {isAnalyzing && analyzingSourceId === source.id ? 'Analyzing...' : 'Analyze'}
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (confirm('Delete this source? This cannot be undone.')) {
+                    onDelete(source.id);
+                    if (selectedId === source.id) onSelect(null);
+                  }
+                }}
+                className="danger"
+                style={{padding: 6, opacity: 0.7}}
+                title="Delete source"
+              >
+                <svg style={{width: 16, height: 16}} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
           </div>
         ))}
       </div>
