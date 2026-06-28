@@ -48,7 +48,7 @@ This approach strikes the optimal balance between latency, accuracy, and operati
 
 ## Links
 - **Live Deployment:** [https://rag-woad.vercel.app/](https://rag-woad.vercel.app/)
-- **Demo Video:** *(Link will be added here)*
+- **Demo Video:** https://youtu.be/dmA1p2I16EU?si=v7y1LWafDAztfqaO
 
 ## Setup / Usage Instructions
 
