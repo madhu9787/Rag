@@ -4,11 +4,34 @@ Nexus AI — RAG Intelligence System
 ## 2. Description
 Nexus AI is a highly scalable, full-stack chatbot application that leverages Retrieval-Augmented Generation (RAG) to provide hyper-accurate answers based on web content. It recursively scrapes any provided website, processes the text into vector embeddings, and uses a powerful Large Language Model to converse with the user while citing exact sources.
 
-## 3. What I Made and What It Solves
-**What I made:** A complete end-to-end RAG system with a stunning, responsive glassmorphism frontend and an asynchronous, high-performance Python backend.
-**What it solves:** It solves the problem of LLM hallucinations and information retrieval by allowing users to dynamically build a trusted knowledge base from any website and query it in real-time. It turns unstructured web data into actionable, citable intelligence.
+## 3. Features
+- **AI-Powered Website Ingestion**: Autonomously crawls, parses, and indexes any documentation, data source, or website into an intelligent vector knowledge base.
+- **Deep AI Website Analysis**: Generates comprehensive executive summaries, knowledge gaps, and dynamically extracts suggested questions directly from indexed data.
+- **Factual RAG with Source Citations**: Eliminates LLM hallucinations by restricting answers strictly to retrieved context, providing exact reference chips for user verification.
+- **Real-Time Streaming Architecture**: Uses Server-Sent Events (SSE) to stream tokens back to the client with zero perceived latency, delivering a ChatGPT-like experience.
+- **Confidence Scoring Metrics**: Each generated answer and retrieved chunk is evaluated for contextual confidence, ensuring transparency in the AI's reasoning.
+- **High-Performance Asynchronous Backend**: Built on FastAPI and `lxml` for extreme I/O concurrency, allowing rapid parsing of hundreds of URLs simultaneously.
+- **Premium Glassmorphism UI**: A fully responsive, meticulously crafted React frontend featuring subtle micro-animations (Framer Motion) and dynamic data visualizations.
 
-## 4. Detailed Tech Stack
+## 4. Solution and Approach (Engineering Report)
+*Architectural Analysis and System Design Justification*
+
+**The Problem Statement:**
+Modern enterprises struggle to extract actionable insights from their own unstructured data (websites, docs, wikis). Off-the-shelf LLMs hallucinate frequently and lack access to proprietary, real-time organizational knowledge. 
+
+**Our Solution & Approach:**
+To solve this, I designed a production-grade **Retrieval-Augmented Generation (RAG)** pipeline that dynamically grounds a foundational LLM (Llama-3.3-70b) in verifiable, user-provided context. 
+
+As a Senior AI/ML Engineer, I approached this by decoupling the ingestion engine from the retrieval/inference engine to maximize throughput and scalability:
+1. **Asynchronous I/O Scraping (httpx + lxml):** Rather than relying on heavy, blocking browser automation (like Selenium/Puppeteer), I implemented an async headless crawler. Using `lxml`—a highly optimized C-parser—drastically reduced parsing latency, allowing the system to ingest vast documentation trees in seconds rather than minutes.
+2. **Deterministic Semantic Chunking:** I engineered the text-splitting logic to use sliding windows (1000 tokens, 200 overlap). This ensures semantic boundaries are preserved, preventing the loss of critical context that often plagues naive chunking algorithms. 
+3. **Local Vectorization (ChromaDB + ONNX):** I opted for ChromaDB running locally with an ONNX-optimized embedding model. This eliminates network latency during the critical vectorization phase and significantly reduces API costs, making the architecture highly cost-effective and secure. 
+4. **Context-Restricted LLM Inference:** During retrieval, a strict system prompt forces the LLM to synthesize answers *only* from the top-K retrieved vectors. If the answer isn't in the context, it gracefully degrades rather than hallucinating. 
+
+**Why this is the perfect architecture:** 
+This approach strikes the optimal balance between latency, accuracy, and operational cost. By pushing the heavy lifting to asynchronous background tasks and local vector indexing, the frontend remains buttery smooth. Furthermore, utilizing Server-Sent Events (SSE) ensures a real-time conversational UX, completely masking the inherent latency of large language model generation.
+
+## 5. Detailed Tech Stack
 - **React**: Used to build a dynamic, component-based user interface.
 - **Vite**: Used as the lightning-fast build tool and development server for the frontend.
 - **Framer Motion**: Used to create smooth, professional micro-interactions and page transitions.
@@ -21,11 +44,11 @@ Nexus AI is a highly scalable, full-stack chatbot application that leverages Ret
 - **Sentence-Transformers (ONNX)**: Used built-in with ChromaDB to convert raw text chunks into mathematical vectors.
 - **httpx, BeautifulSoup4 & lxml**: Used for ultra-fast, asynchronous, headless web scraping and high-performance HTML parsing without heavy browser overhead.
 
-## 5. Links
+## 6. Links
 - **Live Deployment:** [https://rag-woad.vercel.app/](https://rag-woad.vercel.app/)
 - **Demo Video:** *(Link will be added here)*
 
-## 6. Setup / Usage Instructions
+## 7. Setup / Usage Instructions
 
 ### Backend Setup
 ```bash
@@ -48,7 +71,7 @@ CORS_ORIGINS=http://localhost:5173,http://localhost:3000,https://rag-woad.vercel
 ```
 Start the backend server:
 ```bash
-uvicorn app.main:app --reload --port 8000
+uvicorn app.main:app --port 8000
 ```
 
 ### Frontend Setup
@@ -59,13 +82,13 @@ npm install
 npm run dev
 ```
 
-## 7. Dependencies and Prerequisites
+## 8. Dependencies and Prerequisites
 - **Node.js**: v18 or higher (for the frontend environment)
 - **Python**: v3.11 or higher (for backend and AI operations)
 - **Git**: For version control
 - **Groq API Key**: Required for the LLM text generation
 
-## 8. Step-by-Step Usage
+## 9. Step-by-Step Usage
 1. Open the deployed application (or `http://localhost:5173` locally).
 2. Click **"Open Dashboard"** from the landing page.
 3. Navigate to the **"Knowledge Base"** tab.
@@ -74,30 +97,59 @@ npm run dev
 6. Once completed, type your question into the chat interface.
 7. Read the AI's response and click on the generated citation chips to verify the exact source page.
 
-## 9. Solution Approach
-- **Phase 1: Ingestion & Scraping:** Instead of using heavy browser automation, I utilized asynchronous HTTP requests (`httpx`), `BeautifulSoup`, and the high-speed `lxml` C-parser. This ensures the scraper is extremely fast and can easily run on serverless cloud platforms.
-- **Phase 2: Chunking & Embedding:** The extracted raw text is intelligently split into overlapping chunks (1000 tokens) using Langchain to preserve context. These chunks are embedded using an ONNX-optimized embedding model and stored in ChromaDB.
-- **Phase 3: Hybrid Retrieval & Analysis:** When a user asks a question, the query is vectorized and mathematically compared to the database. The top `K` most relevant chunks are retrieved along with a calculated **Confidence Score**. Users can also run a deep **AI Website Analysis** to generate an executive summary, identify knowledge gaps, and extract suggested questions.
-- **Phase 4: Contextual Synthesis & Streaming:** The retrieved context is injected into a specialized prompt and sent to the Groq LLM. The LLM's response (including dynamic follow-up questions) is streamed back to the frontend token-by-token using Server-Sent Events (SSE) for a zero-latency feel.
-
 ## 10. Architecture Diagram
 ```mermaid
-graph TD
-    A[React Frontend] -->|User Query| B(FastAPI Backend)
-    A -->|Submit URL| C(Async Web Crawler)
-    C -->|Raw HTML| D[BeautifulSoup Parser]
-    D -->|Clean Text| E[Text Splitter / Chunker]
-    E -->|Chunks| F[Embedding Model ONNX]
-    F -->|Vectors| G[(ChromaDB Vector Store)]
-    B -->|Query Vector| G
-    G -->|Top K Context| B
-    B -->|Prompt + Context| H{Groq LLM API}
-    H -->|Streamed Response| B
-    B -->|SSE Stream| A
+flowchart TB
+    classDef frontend fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff
+    classDef backend fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff
+    classDef data fill:#8b5cf6,stroke:#5b21b6,stroke-width:2px,color:#fff
+    classDef ai fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#fff
+
+    subgraph Client [Client Tier (React)]
+        A[React UI Component]:::frontend
+        B[SSE Event Listener]:::frontend
+    end
+
+    subgraph API [API Tier (FastAPI)]
+        C[Ingestion Router]:::backend
+        D[Chat Router / Context Builder]:::backend
+    end
+
+    subgraph Workers [Async Worker Tier]
+        E[Web Crawler & Scraper]:::backend
+        F[Text Chunker & Cleaner]:::backend
+    end
+
+    subgraph Data [Data Tier]
+        G[(ChromaDB Vector Store)]:::data
+        H[ONNX Embedding Model]:::data
+    end
+
+    subgraph External [External AI Services]
+        I{Groq Llama-3 API}:::ai
+    end
+
+    A -->|Submit URL| C
+    C -->|Dispatch Task| E
+    E -->|Raw HTML| F
+    F -->|Chunks| H
+    H -->|Vectors| G
+    
+    A -->|User Query| D
+    D -->|Query Vector| G
+    G -->|Top-K Context| D
+    D -->|Strict Prompt + Context| I
+    I -->|Streamed Tokens| D
+    D -->|SSE Stream| B
 ```
 
 ## 11. Explanation of Architecture
-The architecture follows a classic decoupled client-server model optimized for AI workloads. The **React Frontend** handles all user interactions and maintains a persistent SSE connection for real-time text streaming. The **FastAPI Backend** acts as the orchestrator. When a URL is submitted, the **Async Web Crawler** fetches and cleans the data, which is then chunked and embedded into the **ChromaDB Vector Store**. During a chat, the backend vectorizes the user's query, fetches relevant context from ChromaDB, constructs a strict prompt, and passes it to the **Groq LLM**. The generated tokens are piped directly back to the frontend to minimize perceived latency.
+The platform implements a modern, decoupled **Model-View-Controller (MVC)** and **Micro-services** inspired architecture:
+- **Client Tier (View):** Built entirely in React, it handles complex state management and renders the UI. It uses unidirectional data flow to capture user queries and relies on an SSE (Server-Sent Events) listener to parse and render real-time markdown streams from the LLM.
+- **API Tier (Controller):** FastAPI serves as the high-throughput ingress point. It routes incoming requests either to the asynchronous ingestion pipeline or the retrieval-augmented chat logic.
+- **Worker Tier (Business Logic):** Highly concurrent Python routines handle the I/O-bound web scraping (`httpx` + `lxml`) and CPU-bound text chunking/normalization algorithms. 
+- **Data Tier (Model):** A localized ChromaDB vector store coupled with an ONNX embedding pipeline ensures lightning-fast semantic similarity search (Cosine Distance) without the overhead of external database calls.
+- **External AI Tier:** Groq's specialized inference hardware executes the foundational Llama-3 model, generating the final synthesis based on our injected context.
 
 ## 12. Output Images / Screenshots
 
